@@ -443,11 +443,11 @@ function djb2(s) {
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h) ^ s.charCodeAt(i);
   return (h >>> 0).toString(16);
 }
-const U_HASH = 'b899408e'; // "grants"
-const P_HASH = 'f3e97d84'; // "Grants@2026"
+const U_HASH = '5317d3d8'; // "grants"
+const P_HASH = '671a177e'; // "Grants@2026"
 
 function checkLogin() {
-  const u = document.getElementById('g-user').value.trim();
+  const u = document.getElementById('g-user').value.trim().toLowerCase();
   const p = document.getElementById('g-pass').value;
   if (djb2(u) === U_HASH && djb2(p) === P_HASH) {
     sessionStorage.setItem('afenet_grants_auth', '1');
