@@ -3,476 +3,1135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AFENET Grant Intelligence Dashboard — Week 25, 2026</title>
+<title>AFENET Grant Intelligence Dashboard — Week 28, 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --green: #16a34a; --green-light: #dcfce7; --green-dark: #14532d;
-    --yellow: #ca8a04; --yellow-light: #fef9c3;
-    --orange: #ea580c; --orange-light: #ffedd5;
-    --red: #dc2626; --red-light: #fee2e2;
-    --blue: #2563eb; --blue-light: #dbeafe;
-    --gray: #6b7280; --gray-light: #f3f4f6; --gray-dark: #374151;
-    --bg: #f8fafc; --white: #ffffff; --border: #e2e8f0; --shadow: 0 1px 3px rgba(0,0,0,.1);
+    --primary: #1a5276;
+    --secondary: #2e86c1;
+    --accent: #28b463;
+    --warning: #f39c12;
+    --danger: #e74c3c;
+    --light: #f4f6f7;
+    --border: #d5d8dc;
+    --text: #1a252f;
+    --muted: #7f8c8d;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.10);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--gray-dark); font-size: 14px; }
-  .header { background: linear-gradient(135deg, #1e3a5f 0%, #16a34a 100%); color: white; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-  .header h1 { font-size: 22px; font-weight: 700; }
-  .header .meta { font-size: 12px; opacity: .85; margin-top: 4px; }
-  .badge-week { background: rgba(255,255,255,.2); border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
-  .tabs { background: var(--white); border-bottom: 1px solid var(--border); display: flex; padding: 0 28px; gap: 4px; overflow-x: auto; }
-  .tab { padding: 14px 20px; cursor: pointer; font-weight: 500; color: var(--gray); border-bottom: 3px solid transparent; transition: all .2s; font-size: 14px; white-space: nowrap; }
-  .tab.active { color: var(--green); border-bottom-color: var(--green); }
-  .tab:hover:not(.active) { color: var(--gray-dark); }
-  .content { padding: 24px 28px; display: none; }
-  .content.active { display: block; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .card { background: var(--white); border-radius: 10px; padding: 18px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-  .card .num { font-size: 32px; font-weight: 700; line-height: 1; }
-  .card .lbl { font-size: 12px; color: var(--gray); margin-top: 4px; }
-  .card.green .num { color: var(--green); } .card.yellow .num { color: var(--yellow); }
-  .card.red .num { color: var(--red); } .card.blue .num { color: var(--blue); } .card.orange .num { color: var(--orange); }
-  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-  .chart-box { background: var(--white); border-radius: 10px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-  .chart-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--gray-dark); }
-  .chart-wrap { position: relative; height: 220px; }
-  .top-picks { background: var(--white); border-radius: 10px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 24px; }
-  .top-picks h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
-  .pick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .pick { border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
-  .pick .rank { font-size: 11px; color: var(--gray); margin-bottom: 6px; }
-  .pick .ptitle { font-weight: 600; font-size: 13px; margin-bottom: 8px; line-height: 1.4; }
-  .pick .funder { font-size: 12px; color: var(--gray); }
-  .score-bar-bg { background: var(--gray-light); border-radius: 99px; height: 6px; margin-top: 10px; }
-  .score-bar { height: 6px; border-radius: 99px; }
-  .deadline-box { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
-  .deadline-box h3 { font-size: 14px; font-weight: 600; color: var(--orange); margin-bottom: 10px; }
-  .deadline-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #fed7aa; font-size: 13px; gap: 10px; flex-wrap: wrap; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #eaf0fb; color: var(--text); font-size: 14px; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #1a5276 0%, #2e86c1 100%);
+    color: white;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .header-logo { font-size: 28px; }
+  .header-title h1 { font-size: 20px; font-weight: 700; }
+  .header-title p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+  .header-meta { font-size: 12px; opacity: 0.8; text-align: right; line-height: 1.6; }
+  .badge-api { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 3px 10px; font-size: 11px; margin-top: 4px; display: inline-block; }
+
+  /* TABS */
+  .tabs { display: flex; background: white; border-bottom: 2px solid var(--border); padding: 0 32px; gap: 0; }
+  .tab {
+    padding: 12px 22px; cursor: pointer; font-weight: 600; font-size: 13px;
+    color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .tab:hover { color: var(--secondary); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+  /* CONTENT */
+  .content { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SUMMARY CARDS */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: white; border-radius: 10px; padding: 16px 20px;
+    box-shadow: var(--card-shadow); border-left: 4px solid var(--secondary);
+  }
+  .stat-card.green { border-left-color: var(--accent); }
+  .stat-card.orange { border-left-color: var(--warning); }
+  .stat-card.red { border-left-color: var(--danger); }
+  .stat-card.blue { border-left-color: #8e44ad; }
+  .stat-value { font-size: 28px; font-weight: 800; color: var(--primary); }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* CHARTS ROW */
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .chart-card {
+    background: white; border-radius: 10px; padding: 20px;
+    box-shadow: var(--card-shadow);
+  }
+  .chart-card h3 { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .chart-container { position: relative; height: 180px; }
+
+  /* TOP OPPORTUNITIES */
+  .top-opps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .top-opp-card {
+    background: white; border-radius: 10px; padding: 16px;
+    box-shadow: var(--card-shadow); border-top: 4px solid var(--accent);
+  }
+  .top-opp-card .rank { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+  .top-opp-card .title { font-size: 13px; font-weight: 700; color: var(--primary); margin: 6px 0 4px; line-height: 1.4; }
+  .top-opp-card .funder { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .score-bar { flex: 1; background: #e8f0f7; border-radius: 6px; height: 8px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 6px; }
+  .score-num { font-size: 13px; font-weight: 800; min-width: 28px; text-align: right; }
+  .green-score { color: #27ae60; }
+  .yellow-score { color: #e67e22; }
+  .orange-score { color: #e74c3c; }
+
+  /* DEADLINES */
+  .deadlines-section { background: white; border-radius: 10px; padding: 20px; box-shadow: var(--card-shadow); margin-bottom: 24px; }
+  .deadlines-section h3 { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 14px; text-transform: uppercase; }
+  .deadline-item {
+    display: flex; align-items: center; gap: 14px; padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
   .deadline-item:last-child { border-bottom: none; }
-  .days-left { font-weight: 700; color: var(--red); white-space: nowrap; }
-  .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; align-items: flex-end; }
-  .filters select, .filters input { border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 13px; background: var(--white); color: var(--gray-dark); }
-  .filter-group { display: flex; flex-direction: column; gap: 3px; }
-  .filter-group label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-  .tbl-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); }
-  thead { background: #1e3a5f; color: white; }
-  th { padding: 11px 14px; text-align: left; font-size: 12px; font-weight: 600; white-space: nowrap; }
-  td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--gray-light); }
-  .opp-link { color: var(--blue); font-weight: 600; text-decoration: none; }
-  .opp-link:hover { text-decoration: underline; }
-  .badge { display: inline-block; border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 600; margin: 1px 1px 2px 0; white-space: nowrap; }
-  .badge-p1 { background: #dbeafe; color: #1d4ed8; } .badge-p2 { background: #ede9fe; color: #6d28d9; }
-  .badge-p3 { background: #fce7f3; color: #be185d; } .badge-p4 { background: #d1fae5; color: #065f46; }
-  .badge-p5 { background: #fef3c7; color: #92400e; } .badge-p6 { background: #f1f5f9; color: #475569; }
-  .status { display: inline-block; border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-  .status-open { background: var(--green-light); color: var(--green); }
-  .status-closing { background: var(--yellow-light); color: var(--yellow); }
-  .status-closed { background: var(--red-light); color: var(--red); }
-  .status-verify { background: #f3e8ff; color: #7e22ce; }
-  .score-pill { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 13px; }
-  .score-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .score-select-wrap { margin-bottom: 20px; }
-  .score-select-wrap select { border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 13px; min-width: 350px; max-width: 100%; }
+  .deadline-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .deadline-date { font-size: 12px; font-weight: 700; width: 90px; flex-shrink: 0; }
+  .deadline-title { flex: 1; font-size: 13px; }
+  .deadline-days { font-size: 11px; font-weight: 700; border-radius: 10px; padding: 2px 8px; flex-shrink: 0; }
+  .urgent { background: #fdecea; color: #c0392b; }
+  .soon { background: #fef9e7; color: #d68910; }
+  .later { background: #eafaf1; color: #1e8449; }
+  .rolling { background: #eaf0fb; color: #2874a6; }
+
+  /* OPPORTUNITIES TABLE */
+  .filters-row {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+    background: white; padding: 14px 18px; border-radius: 10px; box-shadow: var(--card-shadow);
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .filter-group label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+  .filter-group select, .filter-group input {
+    border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;
+    font-size: 13px; color: var(--text); background: white; outline: none;
+  }
+  .filter-group select:focus, .filter-group input:focus { border-color: var(--secondary); }
+  .results-count { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+
+  table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: var(--card-shadow); }
+  thead th {
+    background: var(--primary); color: white; padding: 12px 14px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    text-align: left; cursor: pointer; white-space: nowrap;
+  }
+  thead th:hover { background: #154360; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: #eaf0fb; }
+  tbody td { padding: 11px 14px; vertical-align: middle; }
+  .opp-title a { color: var(--primary); font-weight: 700; text-decoration: none; font-size: 13px; line-height: 1.3; display: block; }
+  .opp-title a:hover { text-decoration: underline; }
+  .opp-subtitle { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .pill {
+    display: inline-block; border-radius: 10px; padding: 2px 8px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+    margin: 1px 2px; white-space: nowrap;
+  }
+  .pill-p1 { background: #d4e6f1; color: #154360; }
+  .pill-p2 { background: #d5f5e3; color: #1e8449; }
+  .pill-p3 { background: #fde8d8; color: #a04000; }
+  .pill-p4 { background: #e8daef; color: #6c3483; }
+  .pill-p5 { background: #d6eaf8; color: #1a5276; }
+  .pill-p6 { background: #fef9e7; color: #784212; }
+
+  .status-pill { display: inline-block; border-radius: 10px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+  .status-open { background: #d5f5e3; color: #1e8449; }
+  .status-closing { background: #fdecea; color: #c0392b; }
+  .status-anticipated { background: #d6eaf8; color: #1a5276; }
+  .status-closed { background: #f2f3f4; color: #7f8c8d; }
+
+  .mini-score-bar { display: flex; align-items: center; gap: 6px; min-width: 100px; }
+  .mini-bar { flex: 1; background: #e8f0f7; border-radius: 4px; height: 6px; overflow: hidden; }
+  .mini-fill { height: 100%; border-radius: 4px; }
+  .mini-score-num { font-size: 12px; font-weight: 800; min-width: 26px; text-align: right; }
+  .score-excellent { color: #27ae60; }
+  .score-good { color: #e67e22; }
+  .score-moderate { color: #e74c3c; }
+
+  /* SCORE ANALYSIS TAB */
+  .score-selector { background: white; border-radius: 10px; padding: 18px; box-shadow: var(--card-shadow); margin-bottom: 20px; }
+  .score-selector label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 6px; }
+  .score-selector select { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 14px; }
   .score-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .panel { background: var(--white); border-radius: 10px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-  .panel h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
-  .score-dim-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
-  .score-dim-row:last-child { border-bottom: none; }
-  .reco-box { margin-top: 14px; background: var(--green-light); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--green-dark); line-height: 1.5; }
-  .reco-box.orange { background: var(--orange-light); color: #7c2d12; }
-  .reco-box.yellow { background: var(--yellow-light); color: #78350f; }
-  .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-  .pillar-card { background: var(--white); border-radius: 10px; padding: 18px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-  .pillar-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-  .pillar-num { font-size: 28px; font-weight: 700; color: var(--green); margin-top: 8px; }
-  .pillar-sub { font-size: 11px; color: var(--gray); margin-bottom: 10px; }
-  .insight-box { background: var(--white); border-radius: 10px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-  .insight-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-  .insight-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5; }
-  .insight-item:last-child { border-bottom: none; }
-  .insight-label { font-weight: 700; color: var(--green-dark); }
-  #noResults { display:none; text-align:center; padding:40px; color:var(--gray); }
+  .score-radar { background: white; border-radius: 10px; padding: 20px; box-shadow: var(--card-shadow); }
+  .score-breakdown { background: white; border-radius: 10px; padding: 20px; box-shadow: var(--card-shadow); }
+  .score-breakdown h3 { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 14px; text-transform: uppercase; }
+  .dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .dim-name { font-size: 12px; font-weight: 600; width: 180px; flex-shrink: 0; }
+  .dim-bar { flex: 1; background: #e8f0f7; border-radius: 6px; height: 10px; overflow: hidden; }
+  .dim-fill { height: 100%; border-radius: 6px; background: var(--secondary); }
+  .dim-score { font-size: 12px; font-weight: 800; min-width: 50px; text-align: right; color: var(--muted); }
+  .recommendation { background: #eafaf1; border-left: 4px solid var(--accent); border-radius: 8px; padding: 14px; margin-top: 16px; }
+  .recommendation.moderate { background: #fef9e7; border-left-color: var(--warning); }
+  .recommendation h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+  .recommendation p { font-size: 13px; line-height: 1.5; }
+  .score-total-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 56px; height: 56px; border-radius: 50%; font-size: 20px; font-weight: 900;
+    color: white; margin-bottom: 12px;
+  }
+  .bg-excellent { background: #27ae60; }
+  .bg-good { background: #e67e22; }
+  .bg-moderate { background: #e74c3c; }
 
-  /* ── Login Gate ─────────────────────────────── */
-  #gate {
-    position:fixed; inset:0; z-index:9999;
-    background:linear-gradient(135deg,#1e3a5f 0%,#16a34a 100%);
-    display:flex; align-items:center; justify-content:center;
-  }
-  #gate-box {
-    background:#fff; border-radius:16px; padding:40px 36px;
-    width:360px; box-shadow:0 20px 60px rgba(0,0,0,.3); text-align:center;
-  }
-  #gate-box h2 { font-size:20px; font-weight:700; margin-bottom:4px; color:#1e3a5f; }
-  #gate-box p  { font-size:13px; color:#6b7280; margin-bottom:24px; }
-  #gate-box input {
-    width:100%; border:1px solid #e2e8f0; border-radius:8px;
-    padding:10px 14px; font-size:14px; margin-bottom:12px; outline:none;
-  }
-  #gate-box input:focus { border-color:#16a34a; box-shadow:0 0 0 3px rgba(22,163,74,.15); }
-  #gate-btn {
-    width:100%; background:#16a34a; color:#fff; border:none; border-radius:8px;
-    padding:12px; font-size:14px; font-weight:600; cursor:pointer; transition:background .2s;
-  }
-  #gate-btn:hover { background:#15803d; }
-  #gate-err { color:#dc2626; font-size:13px; margin-top:10px; display:none; }
-  #dash { display:none; }
+  /* PILLAR COVERAGE TAB */
+  .pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .pillar-card { background: white; border-radius: 10px; padding: 18px; box-shadow: var(--card-shadow); }
+  .pillar-card h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+  .gap-alert { background: #fdecea; border-radius: 8px; padding: 14px; margin-top: 16px; border-left: 4px solid var(--danger); }
+  .gap-alert h4 { font-size: 12px; font-weight: 700; color: #c0392b; text-transform: uppercase; margin-bottom: 6px; }
 
-  @media(max-width:768px){
-    .charts-row,.pick-grid,.score-detail,.pillar-grid { grid-template-columns:1fr; }
+  /* SOURCE NOTE */
+  .source-note {
+    background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 20px;
+    font-size: 11px; color: var(--muted); line-height: 1.6; border: 1px solid var(--border);
+  }
+  .source-note strong { color: var(--text); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .charts-row { grid-template-columns: 1fr; }
+    .top-opps { grid-template-columns: 1fr; }
+    .score-detail { grid-template-columns: 1fr; }
+    .pillar-grid { grid-template-columns: 1fr; }
+    .content { padding: 16px; }
+    .header { flex-direction: column; gap: 8px; }
+    .tabs { padding: 0 10px; overflow-x: auto; }
   }
 </style>
 </head>
 <body>
 
-<!-- Login Gate -->
-<div id="gate">
-  <div id="gate-box">
-    <div style="font-size:36px;margin-bottom:8px;">🌍</div>
-    <h2>AFENET Grants Dashboard</h2>
-    <p>Grant Office access only.<br>Contact Peter Adewuyi for credentials.</p>
-    <input type="text"     id="g-user" placeholder="Username" autocomplete="username" />
-    <input type="password" id="g-pass" placeholder="Password" autocomplete="current-password" />
-    <button id="gate-btn" onclick="checkLogin()">Sign In</button>
-    <div id="gate-err">Incorrect username or password.</div>
-  </div>
-</div>
-<div id="dash">
-
-
-
-  <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:0;">
-    <button onclick="location.replace(location.pathname+'?t='+Date.now())"
-      style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;">
-      🔄 Refresh — load latest update
-    </button>
-    <button onclick="sessionStorage.removeItem('afenet_grants_auth');location.reload()"
-      style="background:#f1f5f9;color:#374151;border:1px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;">
-      Sign out
-    </button>
-  </div>
-
+<!-- HEADER -->
 <div class="header">
-  <div>
-    <h1>🌍 AFENET Grant Intelligence Dashboard</h1>
-    <div class="meta">Last updated: 17 June 2026 &nbsp;·&nbsp; Weekly automated scan &nbsp;·&nbsp; 10 verified opportunities</div>
+  <div class="header-left">
+    <div class="header-logo">🌍</div>
+    <div class="header-title">
+      <h1>AFENET Grant Intelligence Dashboard</h1>
+      <p>African Field Epidemiology Network &bull; Automated weekly scan &bull; Week 28, 2026</p>
+    </div>
   </div>
-  <div class="badge-week">📅 Week 25 · 2026</div>
+  <div class="header-meta">
+    <div><strong>Last updated:</strong> July 6, 2026</div>
+    <div>Sources: Grants.gov · Pandemic Fund · EU EDCTP3 · Wellcome · GC Africa · US Dept of State · CARE · AUDA-NEPAD</div>
+    <div class="badge-api">⚡ Auto-generated by AFENET Grant Agent</div>
+  </div>
 </div>
 
+<!-- TABS -->
 <div class="tabs">
-  <div class="tab active" onclick="showTab('overview',this)">📊 Overview</div>
-  <div class="tab" onclick="showTab('opportunities',this)">📋 Opportunities</div>
-  <div class="tab" onclick="showTab('scores',this)">🎯 Score Analysis</div>
-  <div class="tab" onclick="showTab('pillars',this)">🏛 Pillar Coverage</div>
+  <div class="tab active" onclick="switchTab('overview')">📊 Overview</div>
+  <div class="tab" onclick="switchTab('opportunities')">🔍 Opportunities</div>
+  <div class="tab" onclick="switchTab('analysis')">📈 Score Analysis</div>
+  <div class="tab" onclick="switchTab('pillars')">🎯 Pillar Coverage</div>
 </div>
 
-<!-- TAB 1: OVERVIEW -->
-<div id="tab-overview" class="content active">
-  <div class="cards">
-    <div class="card green"><div class="num">10</div><div class="lbl">Total Tracked</div></div>
-    <div class="card green"><div class="num">7</div><div class="lbl">Open</div></div>
-    <div class="card yellow"><div class="num">1</div><div class="lbl">Closing Soon</div></div>
-    <div class="card red"><div class="num">1</div><div class="lbl">Closed</div></div>
-    <div class="card blue"><div class="num">2</div><div class="lbl">Verify Deadline</div></div>
-    <div class="card orange"><div class="num">79</div><div class="lbl">Avg Fit Score</div></div>
+<div class="content">
+
+<!-- ==================== TAB 1: OVERVIEW ==================== -->
+<div id="tab-overview" class="tab-panel active">
+
+  <!-- Stat Cards -->
+  <div class="stats-grid">
+    <div class="stat-card green">
+      <div class="stat-value">7</div>
+      <div class="stat-label">Open Now</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-value">2</div>
+      <div class="stat-label">Closing ≤30 days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">1</div>
+      <div class="stat-label">Anticipated</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-value">2</div>
+      <div class="stat-label">Closed / Reference</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-value">$400M+</div>
+      <div class="stat-label">Tracked Funding Pool</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-value">87</div>
+      <div class="stat-label">Top AFENET Score</div>
+    </div>
   </div>
 
-  <div class="deadline-box">
-    <h3>⚠️ Urgent — Deadlines Within 14 Days</h3>
-    <div class="deadline-item">
-      <span><strong>CDC-RFA-JG-26-0056</strong> — Building National Partnerships: Emerging & Reemerging Infectious Diseases (Lab/Surveillance/AMR)</span>
-      <span class="days-left">8 days · 25 Jun 2026</span>
-    </div>
-    <div class="deadline-item" style="opacity:.7;">
-      <span><strong>Wellcome Clinical Trial Award</strong> — Optimising Infectious Disease Interventions (£1M–£8M) — monitor for next cycle</span>
-      <span style="color:var(--red);font-weight:700;">CLOSED 2 Jun 2026</span>
-    </div>
-  </div>
-
+  <!-- Charts Row -->
   <div class="charts-row">
-    <div class="chart-box"><h3>Opportunities by Pillar</h3><div class="chart-wrap"><canvas id="pillarChart"></canvas></div></div>
-    <div class="chart-box"><h3>Funders by Type</h3><div class="chart-wrap"><canvas id="funderChart"></canvas></div></div>
-  </div>
-
-  <div class="top-picks">
-    <h3>🏆 Top 3 Highest-Scoring Opportunities</h3>
-    <div class="pick-grid">
-      <div class="pick">
-        <div class="rank">🥇 Rank 1 &nbsp;·&nbsp; Score <strong style="color:var(--green)">90</strong></div>
-        <div class="ptitle">NIH/Fogarty Global Infectious Disease Research Training (D43)</div>
-        <div class="funder">NIH / Fogarty International Center &nbsp;·&nbsp; Deadline: 6 Aug 2026</div>
-        <div class="score-bar-bg"><div class="score-bar" style="width:90%;background:var(--green);"></div></div>
+    <div class="chart-card">
+      <h3>Opportunities by Pillar</h3>
+      <div class="chart-container">
+        <canvas id="pillarChart"></canvas>
       </div>
-      <div class="pick">
-        <div class="rank">🥈 Rank 2 &nbsp;·&nbsp; Score <strong style="color:var(--green)">88</strong></div>
-        <div class="ptitle">WHO/IPSN Catalytic Grant Fund — Pathogen Surveillance Innovation</div>
-        <div class="funder">WHO / IPSN (Gates, Rockefeller, Wellcome) &nbsp;·&nbsp; Verify deadline</div>
-        <div class="score-bar-bg"><div class="score-bar" style="width:88%;background:var(--green);"></div></div>
+    </div>
+    <div class="chart-card">
+      <h3>Opportunities by Funder Type</h3>
+      <div class="chart-container">
+        <canvas id="funderChart"></canvas>
       </div>
-      <div class="pick">
-        <div class="rank">🥉 Rank 3 &nbsp;·&nbsp; Score <strong style="color:var(--green)">83</strong></div>
-        <div class="ptitle">Pandemic Fund 4th Call for Proposals</div>
-        <div class="funder">World Bank / Pandemic Fund &nbsp;·&nbsp; Rolling to 31 Mar 2027</div>
-        <div class="score-bar-bg"><div class="score-bar" style="width:83%;background:var(--green);"></div></div>
+    </div>
+    <div class="chart-card">
+      <h3>Status Distribution</h3>
+      <div class="chart-container">
+        <canvas id="statusChart"></canvas>
       </div>
     </div>
   </div>
 
-  <div class="chart-box">
-    <h3>📅 Deadline Timeline — Open Opportunities (Days Remaining)</h3>
-    <div class="chart-wrap" style="height:200px;"><canvas id="timelineChart"></canvas></div>
+  <!-- Top 3 Opportunities -->
+  <h3 style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;margin-bottom:12px;">⭐ Top 3 Highest-Scoring Opportunities</h3>
+  <div class="top-opps">
+    <div class="top-opp-card">
+      <div class="rank">🥇 Rank 1 &bull; Open – Rolling</div>
+      <div class="title">Pandemic Fund 4th Call: PPR Systems in 15 African Countries</div>
+      <div class="funder">The Pandemic Fund (World Bank) &bull; $244M pool</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar"><div class="score-bar-fill bg-excellent" style="width:87%"></div></div>
+        <div class="score-num green-score">87</div>
+      </div>
+    </div>
+    <div class="top-opp-card">
+      <div class="rank">🥈 Rank 2 &bull; Anticipated</div>
+      <div class="title">CDC GHS Ghana: Sustaining Public Health Systems</div>
+      <div class="funder">Centers for Disease Control &bull; $125M / 4 awards</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar"><div class="score-bar-fill bg-excellent" style="width:86%"></div></div>
+        <div class="score-num green-score">86</div>
+      </div>
+    </div>
+    <div class="top-opp-card" style="border-top-color:var(--danger)">
+      <div class="rank">🥉 Rank 3 &bull; Closing in 2 days ⚠️</div>
+      <div class="title">SheConnects Digital Accelerator Africa (CARE)</div>
+      <div class="funder">CARE &bull; $500K–$1M / project</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar"><div class="score-bar-fill" style="width:81%;background:var(--danger)"></div></div>
+        <div class="score-num orange-score">81</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upcoming Deadlines -->
+  <h3 style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;margin-bottom:12px;">⏰ Upcoming Deadlines (90-day window)</h3>
+  <div class="deadlines-section">
+    <div class="deadline-item">
+      <div class="deadline-dot" style="background:#e74c3c"></div>
+      <div class="deadline-date">Jul 8, 2026</div>
+      <div class="deadline-title"><strong>SheConnects Digital Accelerator</strong> — CARE digital-tech accelerator for women's health/education/livelihoods (SSA). Found this run; deadline effectively passed for new preparation — log for outreach team &amp; next cohort.</div>
+      <div class="deadline-days urgent">2 days</div>
+    </div>
+    <div class="deadline-item">
+      <div class="deadline-dot" style="background:#e74c3c"></div>
+      <div class="deadline-date">Jul 15, 2026</div>
+      <div class="deadline-title"><strong>CDC-RFA-JG-26-0113</strong> — Preventing Global Health Threats via Surveillance Strengthening</div>
+      <div class="deadline-days urgent">9 days</div>
+    </div>
+    <div class="deadline-item">
+      <div class="deadline-dot" style="background:#f39c12"></div>
+      <div class="deadline-date">Aug 14, 2026</div>
+      <div class="deadline-title"><strong>Advancing Global Health APS (DFOP0017890)</strong> — US Dept. of State GHSD, current quarterly SOI window</div>
+      <div class="deadline-days soon">39 days</div>
+    </div>
+    <div class="deadline-item">
+      <div class="deadline-dot" style="background:#f39c12"></div>
+      <div class="deadline-date">Aug 15, 2026</div>
+      <div class="deadline-title"><strong>CDC-RFA-JG-26-0047</strong> — Ghana GHS: Sustaining Public Health Systems (Anticipated posting)</div>
+      <div class="deadline-days soon">40 days</div>
+    </div>
+    <div class="deadline-item">
+      <div class="deadline-dot" style="background:#27ae60"></div>
+      <div class="deadline-date">Aug 31, 2026</div>
+      <div class="deadline-title"><strong>EDCTP3-SERP-01 (CSA)</strong> — Ethics, Regulatory &amp; Pharmacovigilance Training Networks</div>
+      <div class="deadline-days later">56 days</div>
+    </div>
+    <div class="deadline-item">
+      <div class="deadline-dot" style="background:#27ae60"></div>
+      <div class="deadline-date">Sep 2, 2026</div>
+      <div class="deadline-title"><strong>EDCTP3-DIGIT-02</strong> — Digital Innovation &amp; AI for Healthcare in Sub-Saharan Africa</div>
+      <div class="deadline-days later">58 days</div>
+    </div>
+    <div class="deadline-item">
+      <div class="deadline-dot" style="background:#2874a6"></div>
+      <div class="deadline-date">Rolling</div>
+      <div class="deadline-title"><strong>Pandemic Fund 4th CfP</strong> — PPR Systems for 15 High-Need African Countries (incl. Liberia, Uganda)</div>
+      <div class="deadline-days rolling">Until Mar 2027</div>
+    </div>
+    <div class="deadline-item">
+      <div class="deadline-dot" style="background:#2874a6"></div>
+      <div class="deadline-date">Rolling</div>
+      <div class="deadline-title"><strong>Grand Challenges Africa R16</strong> — Climate Change's Impact on Agriculture &amp; Health (seed grants up to $200K)</div>
+      <div class="deadline-days rolling">Open / Verify</div>
+    </div>
+  </div>
+
+  <div class="source-note">
+    <strong>⚠️ Data Notes:</strong> api.grants.gov was blocked by the run environment's network allowlist this cycle (403 blocked-by-allowlist); Step 0 direct-API queries could not execute. All opportunities below were instead sourced via web search and direct page fetches from grants.gov / simpler.grants.gov, EU EDCTP3, the Pandemic Fund, Wellcome, Science for Africa Foundation, CARE, and AUDA-NEPAD, then verified individually with source URLs. <strong>Correction from last cycle:</strong> the AUDA-NEPAD "Call to Strengthen Surveillance and Disease Systems" (nepad.org/file-download/download/public/115103) was re-verified this run and found to be a historical 2018 solicitation (deadline 21/09/2018) still indexed on NEPAD's site — it has been reclassified from "Open/TBD" to "Closed / Historical Reference" below. Deadlines marked "TBD — Verify" should be independently confirmed before applying. This dashboard covers July 6, 2026. Next automated run: July 13, 2026.
   </div>
 </div>
 
-<!-- TAB 2: OPPORTUNITIES -->
-<div id="tab-opportunities" class="content">
-  <div class="filters">
-    <div class="filter-group"><label>Status</label>
-      <select id="filterStatus" onchange="filterTable()">
+<!-- ==================== TAB 2: OPPORTUNITIES ==================== -->
+<div id="tab-opportunities" class="tab-panel">
+  <div class="filters-row">
+    <div class="filter-group">
+      <label>Status</label>
+      <select id="filterStatus" onchange="applyFilters()">
         <option value="All">All Statuses</option>
         <option value="Open">Open</option>
         <option value="Closing Soon">Closing Soon</option>
+        <option value="Anticipated">Anticipated</option>
         <option value="Closed">Closed</option>
-        <option value="Verify">Verify Deadline</option>
       </select>
     </div>
-    <div class="filter-group"><label>Pillar</label>
-      <select id="filterPillar" onchange="filterTable()">
+    <div class="filter-group">
+      <label>Pillar</label>
+      <select id="filterPillar" onchange="applyFilters()">
         <option value="All">All Pillars</option>
-        <option value="P1">P1 · Surveillance</option>
-        <option value="P2">P2 · Laboratory</option>
-        <option value="P3">P3 · NCDs</option>
-        <option value="P4">P4 · UHC</option>
-        <option value="P5">P5 · One Health</option>
-        <option value="P6">P6 · Research</option>
+        <option value="P1">P1: Surveillance & Emergency</option>
+        <option value="P2">P2: Laboratory Systems</option>
+        <option value="P3">P3: NCD Prevention</option>
+        <option value="P4">P4: Universal Health Coverage</option>
+        <option value="P5">P5: One Health & Climate</option>
+        <option value="P6">P6: Research & Innovation</option>
       </select>
     </div>
-    <div class="filter-group"><label>Min Score</label>
-      <select id="filterScore" onchange="filterTable()">
-        <option value="0">Any Score</option>
-        <option value="70">≥ 70 (Good Fit+)</option>
-        <option value="85">≥ 85 (Excellent)</option>
+    <div class="filter-group">
+      <label>Funder Type</label>
+      <select id="filterFunder" onchange="applyFilters()">
+        <option value="All">All Funders</option>
+        <option value="bilateral">Bilateral (CDC, US State Dept)</option>
+        <option value="multilateral">Multilateral (WHO, World Bank, EU)</option>
+        <option value="private">Private Foundation / INGO</option>
+        <option value="regional">Regional (Africa CDC, NEPAD)</option>
       </select>
     </div>
-    <div class="filter-group"><label>Search</label>
-      <input type="text" id="filterSearch" placeholder="Title or funder…" oninput="filterTable()" style="width:200px;">
+    <div class="filter-group">
+      <label>Min AFENET Score</label>
+      <input type="range" id="filterScore" min="0" max="100" value="0" oninput="updateScoreLabel()" onchange="applyFilters()" style="width:120px">
+      <span id="scoreLabel" style="font-size:12px;color:var(--muted)">≥ 0</span>
+    </div>
+    <div class="filter-group">
+      <label>Search</label>
+      <input type="text" id="filterSearch" placeholder="Title or funder..." oninput="applyFilters()" style="width:180px">
     </div>
   </div>
-  <div class="tbl-wrap">
-    <table>
-      <thead>
-        <tr><th>Title</th><th>Funder</th><th>Type</th><th>Pillars</th><th>Deadline</th><th>Award Range</th><th>Status</th><th>Fit Score</th></tr>
-      </thead>
-      <tbody id="oppBody"></tbody>
-    </table>
-  </div>
-  <div id="noResults">No opportunities match the selected filters.</div>
+
+  <div id="resultsCount" class="results-count">Showing 11 opportunities</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortTable('title')">Opportunity ↕</th>
+        <th onclick="sortTable('funder')">Funder ↕</th>
+        <th>Type</th>
+        <th>Pillars</th>
+        <th onclick="sortTable('deadline')">Deadline ↕</th>
+        <th>Award Range</th>
+        <th onclick="sortTable('status')">Status ↕</th>
+        <th onclick="sortTable('score')">Fit Score ↕</th>
+      </tr>
+    </thead>
+    <tbody id="oppTableBody"></tbody>
+  </table>
 </div>
 
-<!-- TAB 3: SCORE ANALYSIS -->
-<div id="tab-scores" class="content">
-  <div class="score-select-wrap">
-    <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Select opportunity to analyse:</label>
+<!-- ==================== TAB 3: SCORE ANALYSIS ==================== -->
+<div id="tab-analysis" class="tab-panel">
+  <div class="score-selector">
+    <label>Select an opportunity to analyse:</label>
     <select id="scoreSelect" onchange="renderScoreDetail()"></select>
   </div>
-  <div class="score-detail">
-    <div class="panel"><h3>Scoring Radar</h3><div style="position:relative;height:280px;"><canvas id="radarChart"></canvas></div></div>
-    <div class="panel">
-      <h3>Score Breakdown</h3>
-      <div id="scoreDims"></div>
-      <div id="recoBox" class="reco-box"></div>
+  <div class="score-detail" id="scoreDetailArea"></div>
+</div>
+
+<!-- ==================== TAB 4: PILLAR COVERAGE ==================== -->
+<div id="tab-pillars" class="tab-panel">
+  <div class="pillar-grid">
+    <div class="chart-card">
+      <h3>Opportunities per Pillar</h3>
+      <div class="chart-container" style="height:220px">
+        <canvas id="pillarBarChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Pillar × Funder Heatmap</h3>
+      <div id="heatmapContainer"></div>
     </div>
   </div>
-</div>
 
-<!-- TAB 4: PILLAR COVERAGE -->
-<div id="tab-pillars" class="content">
-  <div class="pillar-grid" id="pillarGrid"></div>
-  <div class="insight-box">
-    <h3>💡 Trend Insights — Week 25, 2026</h3>
-    <div class="insight-item"><span class="insight-label">Pillar 6 (Research & Innovation)</span> — Dominant this cycle with 6 opportunities including EU/EDCTP3 Digital AI, NIH/Fogarty D43, WHO/IPSN, and Grand Challenges. AFENET's AI adoption strategy creates direct alignment.</div>
-    <div class="insight-item"><span class="insight-label">Pillar 1 (Surveillance & Emergency Response)</span> — 5 strong opportunities. The Pandemic Fund 4th CfP covering Liberia, Nigeria, and Uganda is the most strategic for AFENET country offices to support.</div>
-    <div class="insight-item"><span class="insight-label">Pillar 2 (Laboratory Systems)</span> — 4 opportunities; EDCTP3 RIA and NIH D43 both cover AMR and genomic sequencing — key for FELTP laboratory modules.</div>
-    <div class="insight-item"><span class="insight-label">Pillar 4 (UHC) — Gap Alert</span> — Only 1 opportunity tracked this cycle. Recommend monitoring Global Fund, World Bank IDA, and African Development Bank for UHC-specific calls.</div>
-    <div class="insight-item"><span class="insight-label">EDCTP3 Digital AI (P6) — Action Required</span> — Deadline August 31, 2026 (75 days). Up to €2.25M for AI/digital health in Sub-Saharan Africa. AFENET should immediately identify a European consortium lead and draft a concept note. This aligns with Phase 3 of the AI adoption roadmap.</div>
-    <div class="insight-item"><span class="insight-label">NIH Fogarty D43 (P2/P6) — High Priority</span> — Deadline August 6, 2026 (50 days). Excellent fit score of 90. Requires a US institutional partner — recommend outreach to CDC Foundation, Johns Hopkins, or Emory School of Public Health.</div>
+  <div class="pillar-grid">
+    <div class="pillar-card">
+      <h3 style="color:#154360">P1 – Surveillance & Emergency Response</h3>
+      <p style="font-size:13px;line-height:1.5;color:#444">
+        <strong>4 opportunities found.</strong> CDC leads with two major NOFOs (JG-26-0113, JG-26-0047), the Pandemic Fund 4th Call explicitly funds surveillance/EPR, and the new Advancing Global Health APS (US State Dept) covers global health security broadly. <em>Strongest funded pillar this cycle.</em>
+      </p>
+    </div>
+    <div class="pillar-card">
+      <h3 style="color:#1e8449">P2 – Laboratory Systems</h3>
+      <p style="font-size:13px;line-height:1.5;color:#444">
+        <strong>2 opportunities found.</strong> CDC Ghana NOFO includes bioinformatics/sequencing capacity and border-district lab strengthening; the Pandemic Fund explicitly funds environmental-surveillance lab capacity. <em>Coverage thinner than P1 — watch for a dedicated lab-systems NOFO next cycle.</em>
+      </p>
+    </div>
+    <div class="pillar-card" style="border-top:3px solid #e74c3c">
+      <h3 style="color:#a04000">P3 – NCD Prevention & Management ⚠️ GAP</h3>
+      <p style="font-size:13px;line-height:1.5;color:#444">
+        <strong>No open, NGO-facing calls identified.</strong> Africa CDC's SPARK-NCD programme (Novo Nordisk Foundation, $2.65M, 11 countries) is active but is being fund-managed directly through the Africa Public Health Foundation with no visible open solicitation for outside implementing partners. AUDA-NEPAD's 2026 Home Grown Solutions Accelerator (health track, closed May 19) touched NCDs but has lapsed. <em>Persistent priority gap — recommend AFENET proactively approach APHF/Africa CDC about a technical-partner role in SPARK-NCD's next expansion phase.</em>
+      </p>
+    </div>
+    <div class="pillar-card">
+      <h3 style="color:#6c3483">P4 – Universal Health Coverage</h3>
+      <p style="font-size:13px;line-height:1.5;color:#444">
+        <strong>2 opportunities found.</strong> Pandemic Fund 4th Call addresses community health/primary care systems; CARE's SheConnects Digital Accelerator (new this cycle) funds digital tools for women's health and livelihoods in SSA, though its window closes in 2 days. <em>Moderate, largely time-limited coverage.</em>
+      </p>
+    </div>
+    <div class="pillar-card">
+      <h3 style="color:#1a5276">P5 – One Health & Climate Change</h3>
+      <p style="font-size:13px;line-height:1.5;color:#444">
+        <strong>2 opportunities found.</strong> Pandemic Fund's Southern Africa One Health / climate-driven disease surveillance model (already awarded, $36M, 8 countries) shows the funding pattern to watch; Grand Challenges Africa Round 16 ("Climate Change's Impact on Agriculture and Health," Wellcome + Foundation S-Sanofi) is a live seed-grant call. <em>Improved from last cycle — GC Africa R16 confirmed as a genuine climate-health vehicle.</em>
+      </p>
+    </div>
+    <div class="pillar-card">
+      <h3 style="color:#784212">P6 – Research, Innovation & FETP</h3>
+      <p style="font-size:13px;line-height:1.5;color:#444">
+        <strong>5 opportunities found.</strong> Strongest pillar for innovation: EDCTP3 Digital/AI call (DIGIT-02), EDCTP3 ethics/regulatory training CSA (SERP-01), Grand Challenges Africa R16, Wellcome Disease Modelling, and CARE's SheConnects digital accelerator. <em>Best-funded pillar for AFENET's AI Lab and research-capacity agenda.</em>
+      </p>
+    </div>
+  </div>
+
+  <div class="gap-alert">
+    <h4>⚠️ Strategic Funding Gaps Identified</h4>
+    <p style="font-size:13px;line-height:1.5">
+      <strong>P3 (NCD)</strong> remains the weakest-covered pillar two cycles running — no open NGO-facing call was found.
+      Recommended actions: (1) Proactively contact the Africa Public Health Foundation re: a technical-partner role in SPARK-NCD's next phase; (2) Position AFENET with Liberia/Uganda MOH as a Pandemic Fund implementing partner to capture integrated P1/P5 components; (3) Watch for AUDA-NEPAD's 2027 Home Grown Solutions Accelerator cohort (expected ~Feb 2027) which historically covers NCD/UHC; (4) Monitor NCD Alliance, WHO AFRO and Merck Foundation for dedicated NCD calls.
+    </p>
   </div>
 </div>
 
+</div><!-- /content -->
+
 <script>
-const OPP = [
-  { id:"NIH-D43-2026", title:"NIH/Fogarty Global Infectious Disease Research Training (D43)", funder:"NIH / Fogarty International Center", ftype:"bilateral", pillars:["P2","P6"], type:"Grant", close:"2026-08-06", award:"$250K–$1.5M/yr", status:"Open", url:"https://grantedai.com/grants/global-infectious-disease-research-training-program-d43-clinical-trial-o-fogarty-international-center-nih-e78265ed", score:90, dims:[30,20,10,15,10,5], summary:"NIH Fogarty D43 funds US–LMIC collaborative research training in infectious disease including AMR and surveillance. AFENET serves as the African institutional partner. Requires identifying a US co-applicant institution." },
-  { id:"WHO-IPSN-2026", title:"WHO/IPSN Catalytic Grant Fund 2026/2027 — Pathogen Surveillance Innovation", funder:"WHO / IPSN (Gates, Rockefeller, Wellcome)", ftype:"multilateral", pillars:["P1","P6"], type:"Grant", close:null, award:"$50K–$250K", status:"Verify", url:"https://www.who.int/news-room/articles-detail/catalytic-grant-fund-application-cycle-2026-2027", score:88, dims:[30,20,15,15,5,3], summary:"WHO IPSN Catalytic Grant Fund supports pilot projects in pathogen genomic surveillance and wastewater environmental surveillance. AFENET must be or become an IPSN member. Announced April 17; verify current concept note submission status." },
-  { id:"PF-2026-CFP4", title:"Pandemic Fund 4th Call for Proposals — High-Risk, High-Need Countries", funder:"World Bank / Pandemic Fund", ftype:"multilateral", pillars:["P1","P2","P5"], type:"Grant", close:"2027-03-31", award:"TBD (prior rounds $5–50M)", status:"Open", url:"https://www.thepandemicfund.org/call-for-proposals", score:83, dims:[30,20,10,8,10,5], summary:"The 4th CfP targets 15 high-risk countries including Liberia, Nigeria, and Uganda — countries where AFENET has active operations. AFENET can serve as technical implementing partner for national government applicants. Rolling submissions." },
-  { id:"EDCTP3-DIGIT-2026", title:"EDCTP3 Digital Innovation & AI in Healthcare — Sub-Saharan Africa (CSA)", funder:"EU / Global Health EDCTP3", ftype:"multilateral", pillars:["P6"], type:"Grant", close:"2026-08-31", award:"Up to €2.25M", status:"Open", url:"https://www.global-health-edctp3.europa.eu", score:83, dims:[30,20,15,8,5,5], summary:"EU EDCTP3 coordination and support action on AI and digital health innovation in sub-Saharan Africa. Directly aligned with AFENET's AI adoption strategy. Requires a European consortium partner. Full proposals due 31 August 2026." },
-  { id:"NEPAD-SURV-2026", title:"AUDA-NEPAD — Strengthening Surveillance & Disease (Re-advertised)", funder:"AUDA-NEPAD", ftype:"regional", pillars:["P1"], type:"Grant", close:null, award:"Not specified", status:"Verify", url:"https://www.nepad.org/file-download/download/public/115103", score:83, dims:[30,20,10,15,5,3], summary:"AUDA-NEPAD re-advertised call to strengthen surveillance and disease management across Africa. Strong thematic fit. Verify current deadline and NGO/INGO eligibility directly with NEPAD secretariat." },
-  { id:"EDCTP3-RIA-2026", title:"EDCTP3 Research & Innovation Actions — TB, HIV, Respiratory & Climate-Health", funder:"EU / Global Health EDCTP3", ftype:"multilateral", pillars:["P2","P3","P5","P6"], type:"Grant", close:"2026-09-17", award:"Up to €10M per project", status:"Open", url:"https://www.global-health-edctp3.europa.eu", score:75, dims:[20,20,15,8,7,5], summary:"€147M EU programme for research on TB, lower respiratory infections, HIV co-infections, and climate-driven diseases in Africa. ≥50% coapplicants must be Africa-based. AFENET fits as African implementation and field research partner with a European lead." },
-  { id:"GC-AFRICA-2026", title:"Grand Challenges Africa 2026 — Health Innovation & AI (Seed / Scale-up Grants)", funder:"Grand Challenges Canada / Africa", ftype:"private", pillars:["P6"], type:"Grant", close:null, award:"Seed ~$100K; Scale-up TBD", status:"Open", url:"https://opportunitiesforyouth.org/2026/04/24/grand-challenges-grant-opportunities-2026-global-funding-for-health-innovation-nutrition-research-ai-solutions-and-development-breakthroughs/", score:78, dims:[20,20,20,8,5,5], summary:"Grand Challenges Africa awards seed and scale-up grants for health innovation including AI-driven surveillance and diagnostics. Rolling calls. AFENET's AI strategy and field epidemiology training could anchor a compelling application." },
-  { id:"CHILD-SURV-2026", title:"Child Survival Call 2026 — Advancing Maternal & Child Health in Sub-Saharan Africa", funder:"European Donor Consortium", ftype:"multilateral", pillars:["P3","P4"], type:"Grant", close:null, award:"Up to €450,000", status:"Verify", url:"https://www2.fundsforngos.org/health-2/child-survival-call-2026-advancing-maternal-and-child-health/", score:73, dims:[20,20,20,0,10,3], summary:"Funding for collaborative NGO initiatives strengthening health systems in sub-Saharan Africa to reduce maternal and child mortality. Covers NCD/UHC pillars. Verify current deadline on fundsforNGOs." },
-  { id:"CDC-RFA-JG-26", title:"CDC NOFO — Building National Partnerships: Prevention of Emerging & Reemerging Infectious Diseases", funder:"US CDC / NCEZID", ftype:"bilateral", pillars:["P1","P2"], type:"NOFO", close:"2026-06-25", award:"~$9.4M avg (8 awards, $75M total)", status:"Closing Soon", url:"https://simpler.grants.gov/opportunity/e8fdae75-ffe0-44ad-8328-47ddfaee5840", score:66, dims:[30,0,20,8,7,1], summary:"CDC NOFO for building US national partnerships covering lab systems, biorisk, AMR, and emergency response. Primarily US-domestic partnerships; AFENET's geographic fit is limited. Closing in 8 days — evaluate urgency vs. capacity." },
-  { id:"WELLCOME-TRIAL-2026", title:"Wellcome Clinical Trial Award — Optimising Infectious Disease Interventions for Impact", funder:"Wellcome Trust / NIHR", ftype:"private", pillars:["P1","P6"], type:"Grant", close:"2026-06-02", award:"£1M–£8M", status:"Closed", url:"https://wellcome.org/research-funding/schemes/infectious-disease-clinical-trial-award-optimising-interventions-impact", score:62, dims:[20,20,10,8,10,0], summary:"Wellcome/NIHR large-scale clinical trial award for optimising licensed drugs/vaccines in infectious disease in LMICs. CLOSED 2 June 2026. Included for tracking — monitor Wellcome for next cycle announcement." }
+// ===========================
+// DATA
+// ===========================
+const opportunities = [
+  {
+    id: "PF-4TH-CFP",
+    title: "Pandemic Fund 4th Call: Pandemic Prevention, Preparedness & Response",
+    funder: "The Pandemic Fund (World Bank)",
+    funder_type: "multilateral",
+    type: "Grant",
+    pillars: ["P1","P2","P4","P5"],
+    open_date: "2026-04-01",
+    close_date: "2027-03-31",
+    award: "$244M total pool (15 eligible countries)",
+    eligibility: "Country-led (Liberia, Uganda, Nigeria, Mozambique, etc.); CSOs as implementing partners",
+    geographic: "15 African/fragile-state countries incl. Liberia & Uganda",
+    status: "Open",
+    url: "https://www.thepandemicfund.org/call-for-proposals",
+    summary: "The Pandemic Fund's 4th Call for Proposals (launched April 1, 2026) targets 15 high-risk, high-need countries with the greatest capacity gaps that have not previously received single-country grants — including Liberia and Uganda, where AFENET runs established FETP programs. Rolling submission window through March 31, 2027, reviewed on a rolling basis. Supports surveillance, laboratory systems, workforce/EPR governance, and One Health integration.",
+    score: 87,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 20, max: 20 },
+      "Org Eligibility": { score: 10, max: 20 },
+      "FELTP Relevance": { score: 15, max: 15 },
+      "Award Feasibility": { score: 7, max: 10 },
+      "Timeline Feasibility": { score: 5, max: 5 }
+    },
+    recommendation: "Top-ranked opportunity again this cycle. Liberia and Uganda are both eligible Co-Investor countries, and AFENET has established FETP programs in both. AFENET cannot apply directly — applications run through national governments via an invitation-only portal — so the priority action is to engage Liberia's MOHSW and Uganda's MOH now to be named as the primary technical implementing partner for surveillance and lab components of their submissions. Rolling deadline through March 2027 gives runway, but earlier submissions are reviewed first.",
+    rec_type: "excellent"
+  },
+  {
+    id: "CDC-JG-26-0047",
+    title: "Global Health Security: Strengthening & Sustaining Public Health Systems in Ghana",
+    funder: "CDC / DGHP",
+    funder_type: "bilateral",
+    type: "NOFO",
+    pillars: ["P1","P2","P6"],
+    open_date: "2026-06-30 (est.)",
+    close_date: "2026-08-15",
+    award: "$30M–$32M per award ($125M / 4 awards)",
+    eligibility: "Unrestricted – NGOs, academic, for-profit",
+    geographic: "Ghana",
+    status: "Anticipated",
+    url: "https://www.grants.gov/search-results-detail/360455",
+    summary: "CDC NOFO (CDC-RFA-JG-26-0047) to build and sustain a resilient public health system in Ghana. Covers lab capacity, surveillance, emergency response, workforce development, border-district strengthening, sequencing/bioinformatics. AFENET operates in Ghana through the Ghana FETP program. Forecast posting was expected June 30, 2026; estimated due date August 15, 2026.",
+    score: 86,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 15, max: 20 },
+      "Org Eligibility": { score: 20, max: 20 },
+      "FELTP Relevance": { score: 15, max: 15 },
+      "Award Feasibility": { score: 3, max: 10 },
+      "Timeline Feasibility": { score: 3, max: 5 }
+    },
+    recommendation: "Excellent multi-pillar match with strong geographic fit given AFENET's Ghana FETP work. Award size ($30M+ per award) is large and will likely require a consortium lead — AFENET should position as technical implementing partner alongside a larger NGO or university. Now 40 days to the estimated due date; begin scoping activities and identifying a consortium lead immediately, and confirm the NOFO has formally posted on grants.gov (still showing as Forecasted as of this run).",
+    rec_type: "excellent"
+  },
+  {
+    id: "SHECONNECTS",
+    title: "SheConnects Digital Accelerator Africa",
+    funder: "CARE",
+    funder_type: "private",
+    type: "Accelerator Grant",
+    pillars: ["P4","P6"],
+    open_date: "2026-05-01 (est.)",
+    close_date: "2026-07-08",
+    award: "$500,000 – $1,000,000 per project",
+    eligibility: "High-potential organisations using digital technology for health/education/livelihoods outcomes",
+    geographic: "Sub-Saharan Africa",
+    status: "Closing Soon",
+    url: "https://africanngos.org/2026/06/09/african-ngo-funding-opportunities-june-july-2026/",
+    summary: "New opportunity identified this cycle. CARE's SheConnects Digital Accelerator supports high-potential organisations using digital technology to improve health, education, and agriculture/livelihood outcomes for women across Sub-Saharan Africa, with awards of $500K–$1M per project. Deadline is July 8, 2026 — only 2 days from this scan.",
+    score: 81,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 20, max: 20 },
+      "Org Eligibility": { score: 20, max: 20 },
+      "FELTP Relevance": { score: 0, max: 15 },
+      "Award Feasibility": { score: 10, max: 10 },
+      "Timeline Feasibility": { score: 1, max: 5 }
+    },
+    recommendation: "Strong thematic and organisational fit, but surfaced too late in this cycle to act on — only 2 days remain to the deadline as of this scan. Not realistically actionable for this round; flag to the Communications/Programs teams as a strong candidate for CARE's next accelerator cohort, and consider setting a standing monthly watch on CARE's opportunity page rather than waiting for the weekly scan to catch it.",
+    rec_type: "moderate"
+  },
+  {
+    id: "CDC-JG-26-0113",
+    title: "Preventing Global Health Threats: Strengthening Surveillance Systems",
+    funder: "CDC / DGHP",
+    funder_type: "bilateral",
+    type: "NOFO",
+    pillars: ["P1","P5"],
+    open_date: "2026-06-12",
+    close_date: "2026-07-15",
+    award: "$15M total ($7.5M avg., 2 awards)",
+    eligibility: "Unrestricted – NGOs, universities, for-profit",
+    geographic: "Global (Africa implementation)",
+    status: "Closing Soon",
+    url: "https://simpler.grants.gov/opportunity/040a64cc-2f25-48d8-8675-6f2e85679841",
+    summary: "CDC-DGHP NOFO to strengthen public health surveillance systems globally, improve the surveillance workforce, enhance electronic disease platforms, reinforce emergency preparedness, and support One Health cross-sectoral collaboration. Partners work with Ministries of Health and CDC country offices. Only 9 days remain to the July 15 deadline.",
+    score: 78,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 5, max: 20 },
+      "Org Eligibility": { score: 20, max: 20 },
+      "FELTP Relevance": { score: 15, max: 15 },
+      "Award Feasibility": { score: 7, max: 10 },
+      "Timeline Feasibility": { score: 1, max: 5 }
+    },
+    recommendation: "Strong thematic match — surveillance systems, One Health, and workforce development align tightly with AFENET's core mandate — but the timeline score has now dropped to 1/5 with only 9 days left. Only pursue if AFENET already has a near-complete concept note and an active CDC country-office relationship; otherwise treat this as a template to prepare a faster response next time a similar NOFO is released.",
+    rec_type: "good"
+  },
+  {
+    id: "EDCTP3-DIGIT-02",
+    title: "EDCTP3: Enhancing Healthcare in Sub-Saharan Africa via Digital Innovation & AI",
+    funder: "EU / Global Health EDCTP3 (Horizon Europe)",
+    funder_type: "multilateral",
+    type: "CSA / Grant",
+    pillars: ["P1","P6"],
+    open_date: "2026-01-01",
+    close_date: "2026-09-02",
+    award: "Up to €2.25M per project (€18M total, ~8 projects)",
+    eligibility: "Consortiums with African and European partners",
+    geographic: "Sub-Saharan Africa",
+    status: "Open",
+    url: "https://www.fundingprogrammesportal.gov.cy/en/call/enhancing-integrated-research-and-healthcare-in-sub-saharan-africa-through-digital-innovation-and-artificial-intelligence-en-2026/",
+    summary: "Horizon Europe / EDCTP3 call (HORIZON-JU-GH-EDCTP3-2026-03-DIGIT-02) to strengthen health systems in sub-Saharan Africa through digital health records and AI/machine-learning tools to prevent, detect or treat infectious diseases, and to help healthcare workers and policymakers make informed clinical and epidemic-preparedness decisions. Indicative budget €18.0M, up to 8 projects, max €2.25M per project. Full proposals due September 2, 2026.",
+    score: 78,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 20, max: 20 },
+      "Org Eligibility": { score: 15, max: 20 },
+      "FELTP Relevance": { score: 8, max: 15 },
+      "Award Feasibility": { score: 10, max: 10 },
+      "Timeline Feasibility": { score: 5, max: 5 }
+    },
+    recommendation: "Good fit for AFENET's AI Lab strategy — the call explicitly targets AI tools that inform epidemic-preparedness decisions, directly touching both P1 (surveillance) and P6 (innovation). AFENET should position as the African public health implementing partner within a consortium; the key requirement is a European academic/research institution as consortium lead. Award size (€2.25M) is very manageable. Recommend scoping a proposal around AI-enhanced FETP surveillance data pipelines or outbreak intelligence dashboards.",
+    rec_type: "good"
+  },
+  {
+    id: "EDCTP3-SERP-01",
+    title: "EDCTP3: Training & Innovation Networks for Ethics, Regulatory & Pharmacovigilance Capacity",
+    funder: "EU / Global Health EDCTP3 (Horizon Europe)",
+    funder_type: "multilateral",
+    type: "CSA",
+    pillars: ["P6"],
+    open_date: "2026-01-01",
+    close_date: "2026-08-31",
+    award: "Not specified (typically €1–3M for CSAs)",
+    eligibility: "Consortiums; African institutions eligible as partners",
+    geographic: "Sub-Saharan Africa",
+    status: "Open",
+    url: "https://www.edctp.org/edctp-association-as-coordinator-of-global-health-edctp3-projects-2/2026-calls-for-proposals/",
+    summary: "EDCTP3 Coordination and Support Action (HORIZON-JU-GH-EDCTP3-2026-03-SERP-01) funding training and innovation networks for sustained capacity development in ethics, regulatory science, pharmacovigilance, and related digital regulatory platforms across Africa. Single-stage full proposals due August 31, 2026.",
+    score: 73,
+    dims: {
+      "Thematic Alignment": { score: 20, max: 30 },
+      "Geographic Fit": { score: 20, max: 20 },
+      "Org Eligibility": { score: 15, max: 20 },
+      "FELTP Relevance": { score: 8, max: 15 },
+      "Award Feasibility": { score: 5, max: 10 },
+      "Timeline Feasibility": { score: 5, max: 5 }
+    },
+    recommendation: "Moderate-to-good fit. If AFENET's FELTP alumni network can anchor a regulatory/pharmacovigilance training curriculum, this is a plausible vehicle, but consortium participation (not as lead) is the realistic entry point — pair with a European university with a Horizon Europe track record. Lower strategic priority than DIGIT-02 given weaker thematic alignment with AFENET's core epidemiology mandate.",
+    rec_type: "good"
+  },
+  {
+    id: "AGH-APS",
+    title: "Advancing Global Health — Annual Program Statement (DFOP0017890)",
+    funder: "U.S. Department of State (GHSD)",
+    funder_type: "bilateral",
+    type: "APS / Cooperative Agreement",
+    pillars: ["P1","P4"],
+    open_date: "2026-03-01",
+    close_date: "2026-08-14 (current quarterly window)",
+    award: "$500,000 – $250,000,000 (program ceiling $4.5B)",
+    eligibility: "U.S. and foreign for-profit, non-profit, higher-ed, public international, and governmental institutions",
+    geographic: "Global, with Africa-specific Addenda",
+    status: "Open",
+    url: "https://govtribe.com/opportunity/federal-grant-opportunity/advancing-global-health-dfop0017890",
+    summary: "New opportunity identified this cycle. The U.S. Department of State's Bureau of Global Health Security and Diplomacy issued this Annual Program Statement to operationalize the America First Global Health Strategy, complementing bilateral MOUs with partner governments. Applicants submit 5-page Statements of Interest against specific regional/thematic Addenda in quarterly windows (current window: June 1 – Aug 14, 2026); competitive SOIs are invited to submit full applications.",
+    score: 73,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 5, max: 20 },
+      "Org Eligibility": { score: 20, max: 20 },
+      "FELTP Relevance": { score: 8, max: 15 },
+      "Award Feasibility": { score: 7, max: 10 },
+      "Timeline Feasibility": { score: 3, max: 5 }
+    },
+    recommendation: "Large, flexible, and newly launched — worth monitoring closely, but the generic APS structure means AFENET's fit depends entirely on which regional/thematic Addenda are released under it. Action: assign someone to track GHSD Addenda releases and be ready to submit a 5-page SOI quickly (36 days remain in the current window). Do not over-invest until an Africa-specific Addendum with GHS/surveillance language appears.",
+    rec_type: "good"
+  },
+  {
+    id: "GCA-R16",
+    title: "Grand Challenges Africa Round 16: Climate Change's Impact on Agriculture and Health",
+    funder: "Science for Africa Foundation / Wellcome / Foundation S-Sanofi Collective",
+    funder_type: "private",
+    type: "Challenge Grant",
+    pillars: ["P5","P6"],
+    open_date: "2026-01-01 (est.)",
+    close_date: "TBD – Verify at scienceforafrica.foundation",
+    award: "Up to $200,000 seed grants (24 months)",
+    eligibility: "African researchers/organisations incl. NGOs, academia, civil society",
+    geographic: "Pan-Africa (country-specific portals for Ethiopia & Rwanda)",
+    status: "Open",
+    url: "https://scienceforafrica.foundation/resources/round-16-rules-and-guidelines",
+    summary: "Corrected this cycle: Round 16 is jointly funded by SFA Foundation, Wellcome, and Foundation S-Sanofi Collective and is themed 'Accelerating & Catalysing Solutions for Climate Change's Impact on Agriculture and Health' (not the AI theme referenced in the previous scan). Seed grants of up to $200,000 for 24 months; promising Phase I results can apply for follow-on scale-up funding. Applications via the Grand Challenges Africa portal (Ethiopia/Rwanda applicants use country-specific portals).",
+    score: 78,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 20, max: 20 },
+      "Org Eligibility": { score: 20, max: 20 },
+      "FELTP Relevance": { score: 0, max: 15 },
+      "Award Feasibility": { score: 5, max: 10 },
+      "Timeline Feasibility": { score: 3, max: 5 }
+    },
+    recommendation: "Good entry-level opportunity for AFENET's One Health/climate agenda — the seed-grant size ($200K) is well-matched to piloting a climate-sensitive disease surveillance or One Health tool without a complex consortium. Suggested concept: climate-driven outbreak early-warning pilot linking FETP surveillance data with environmental/meteorological indicators in a Southern or East African country office. Confirm the exact submission deadline directly on the Grand Challenges portal before committing staff time.",
+    rec_type: "good"
+  },
+  {
+    id: "WELL-MODHA",
+    title: "Wellcome / Gates: Strengthening Health & Disease Modelling in Africa",
+    funder: "Wellcome Trust + Gates Foundation",
+    funder_type: "private",
+    type: "Grant / RFP",
+    pillars: ["P1","P6"],
+    open_date: "2025-01-01",
+    close_date: "TBD – Verify at wellcome.org",
+    award: "Not specified (verify at wellcome.org)",
+    eligibility: "Lead applicants based in Africa; ≥70% to LMICs; ≥50% to African institutions",
+    geographic: "Africa (Africa-led required)",
+    status: "Open",
+    url: "https://wellcome.org/research-funding/schemes/strengthening-health-and-disease-modelling-public-health-decision-making",
+    summary: "Wellcome and Gates Foundation joint call supporting disease-modelling projects led by Africa-based researchers. Focus includes modelling of climate-change-driven infectious diseases (malaria, dengue, schistosomiasis) and optimal control strategies to inform public health decision-making. AFENET qualifies as an Africa-based lead applicant.",
+    score: 78,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 20, max: 20 },
+      "Org Eligibility": { score: 10, max: 20 },
+      "FELTP Relevance": { score: 0, max: 15 },
+      "Award Feasibility": { score: 5, max: 10 },
+      "Timeline Feasibility": { score: 3, max: 5 }
+    },
+    recommendation: "Strategically attractive given AFENET's data assets, but the award ceiling and deadline are still unpublished/unverified as of this run — treat the score as provisional until confirmed on wellcome.org. If AFENET leads as the African PI institution and subcontracts modelling expertise, a proposal built around FETP surveillance data for outbreak modelling would link Pillar 1 and Pillar 6 explicitly.",
+    rec_type: "good"
+  },
+  {
+    id: "AUDA-HGSA",
+    title: "AUDA-NEPAD Home Grown Solutions Accelerator (Health Track)",
+    funder: "AUDA-NEPAD",
+    funder_type: "regional",
+    type: "Accelerator Grant",
+    pillars: ["P3","P4","P6"],
+    open_date: "2026-03-01",
+    close_date: "2026-05-19",
+    award: "Not specified (typical: $50K–$250K)",
+    eligibility: "African healthcare/climate ventures and NGOs",
+    geographic: "Pan-Africa",
+    status: "Closed",
+    url: "https://www.nepad.org/news/calling-african-healthcare-and-climate-ventures-apply-2026-cohort-of-auda-nepads-home",
+    summary: "AUDA-NEPAD's 2026 cohort for its Home Grown Solutions Accelerator supported African health-system innovations including digital health, maternal health, disease prevention, workforce development, and supply chains. Closed May 19, 2026. Kept as reference for the next cycle — typically an annual programme.",
+    score: 68,
+    dims: {
+      "Thematic Alignment": { score: 20, max: 30 },
+      "Geographic Fit": { score: 20, max: 20 },
+      "Org Eligibility": { score: 20, max: 20 },
+      "FELTP Relevance": { score: 8, max: 15 },
+      "Award Feasibility": { score: 0, max: 10 },
+      "Timeline Feasibility": { score: 0, max: 5 }
+    },
+    recommendation: "Closed for 2026. AFENET should bookmark for the 2027 cycle (historically opens around Q1). Its NCD and UHC coverage would help close AFENET's persistent P3 funding gap — set a calendar reminder for February 2027.",
+    rec_type: "moderate"
+  },
+  {
+    id: "NEPAD-SURV-2018",
+    title: "AUDA-NEPAD: Call to Strengthen Surveillance and Disease Systems (2018 — Historical)",
+    funder: "AUDA-NEPAD / African Union Commission",
+    funder_type: "regional",
+    type: "Grant",
+    pillars: ["P1","P2"],
+    open_date: "2018-01-01 (est.)",
+    close_date: "2018-09-21 (expired)",
+    award: "USD 3,000,000 (2018 allocation — expired)",
+    eligibility: "African-owned public/private organisations, incl. NGOs (as of 2018 solicitation)",
+    geographic: "Pan-Africa",
+    status: "Closed",
+    url: "https://www.nepad.org/file-download/download/public/115103",
+    summary: "Re-verified this cycle by downloading the full PDF: this is a re-advertised 2018 Africa CDC / African Union Commission call to strengthen surveillance, disease intelligence, and health information exchange (deadline 21 September 2018, Addis Ababa time). It remains indexed on nepad.org but is not a live 2026 opportunity. Corrected from 'Open / TBD' in the previous scan to 'Closed / Historical' — retained only as a template of Africa CDC's periodic surveillance call design, since similar calls have reappeared roughly every few years.",
+    score: 70,
+    dims: {
+      "Thematic Alignment": { score: 30, max: 30 },
+      "Geographic Fit": { score: 20, max: 20 },
+      "Org Eligibility": { score: 15, max: 20 },
+      "FELTP Relevance": { score: 5, max: 15 },
+      "Award Feasibility": { score: 0, max: 10 },
+      "Timeline Feasibility": { score: 0, max: 5 }
+    },
+    recommendation: "Not actionable — this document is from 2018 and the deadline has long passed. Retained purely as a reference: Africa CDC/AU periodically reissues near-identical surveillance/disease-intelligence calls (worth roughly 70/100 on AFENET's rubric when live), so this is a good template to recognize if a fresh version reappears. Recommend a direct inquiry to Africa CDC's Surveillance & Disease Intelligence directorate to ask whether a 2026/2027 successor call is planned.",
+    rec_type: "moderate"
+  }
 ];
 
-const PLABELS = { P1:"P1·Surveillance", P2:"P2·Laboratory", P3:"P3·NCDs", P4:"P4·UHC", P5:"P5·One Health", P6:"P6·Research" };
-const PFULL = { P1:"Surveillance & Emergency Response", P2:"Public Health Laboratory Systems", P3:"NCD Prevention & Management", P4:"Universal Health Coverage", P5:"One Health & Climate", P6:"Research, Innovation & Networking" };
-const PCOLORS = { P1:"#3b82f6", P2:"#8b5cf6", P3:"#ec4899", P4:"#10b981", P5:"#f59e0b", P6:"#64748b" };
-const DNAMES = ["Thematic Alignment","Geographic Fit","Org Eligibility","FELTP/Workforce","Award Feasibility","Timeline"];
-const DMAX   = [30,20,20,15,10,5];
+// ===========================
+// PILLAR LABELS
+// ===========================
+const PILLAR_LABELS = {
+  "P1": "Surveillance & Emergency",
+  "P2": "Lab Systems",
+  "P3": "NCD Prevention",
+  "P4": "UHC",
+  "P5": "One Health & Climate",
+  "P6": "Research & Innovation"
+};
+const PILLAR_COLORS = {
+  "P1": "#2e86c1", "P2": "#27ae60", "P3": "#e67e22",
+  "P4": "#8e44ad", "P5": "#1a5276", "P6": "#d4ac0d"
+};
 
-function scoreColor(s){ return s>=85?"#16a34a":s>=70?"#ca8a04":s>=50?"#ea580c":"#dc2626"; }
-function scoreEmoji(s){ return s>=85?"🟢":s>=70?"🟡":s>=50?"🟠":"🔴"; }
-function statusCls(s){ return s==="Open"?"status-open":s==="Closing Soon"?"status-closing":s==="Closed"?"status-closed":"status-verify"; }
-function statusLbl(s){ return s==="Verify"?"Verify Deadline":s; }
-function fmtDate(d){ if(!d)return"TBD"; return new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
-function daysLeft(d){ if(!d)return null; return Math.round((new Date(d)-new Date())/(86400000)); }
-
-function showTab(id,el){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
-  document.getElementById("tab-"+id).classList.add("active");
-  el.classList.add("active");
-  if(id==="scores"&&!document.getElementById("scoreSelect").options.length) populateScoreSelect();
-  if(id==="pillars"&&!document.getElementById("pillarGrid").children.length) renderPillars();
+// ===========================
+// TAB SWITCHING
+// ===========================
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panels = ['overview','opportunities','analysis','pillars'];
+  const idx = panels.indexOf(name);
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name === 'overview') { setTimeout(initOverviewCharts, 50); }
+  if (name === 'opportunities') renderTable(opportunities);
+  if (name === 'analysis') initScoreAnalysis();
+  if (name === 'pillars') { setTimeout(initPillarCharts, 50); renderHeatmap(); }
 }
 
-function renderTable(data){
-  const tbody=document.getElementById("oppBody");
-  tbody.innerHTML="";
-  const noR=document.getElementById("noResults");
-  if(!data.length){noR.style.display="block";return;} noR.style.display="none";
-  data.forEach(o=>{
-    const dl=daysLeft(o.close);
-    const dlTxt=o.close?(dl<0?"CLOSED":dl===0?"Today":dl+" d left"):"TBD";
-    const urgent=o.close&&dl!==null&&dl<=14&&dl>=0;
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td style="max-width:240px;"><a class="opp-link" href="${o.url}" target="_blank">${o.title}</a></td>
-      <td style="max-width:150px;font-size:12px;">${o.funder}</td>
-      <td><span class="badge" style="background:#f0fdf4;color:#166534;">${o.type}</span></td>
-      <td>${o.pillars.map(p=>`<span class="badge badge-${p.toLowerCase()}">${PLABELS[p]}</span>`).join("")}</td>
-      <td style="white-space:nowrap;">${fmtDate(o.close)}${urgent?` <strong style="color:#dc2626;">(${dlTxt})</strong>`:""}</td>
-      <td style="white-space:nowrap;font-size:12px;">${o.award}</td>
-      <td><span class="status ${statusCls(o.status)}">${statusLbl(o.status)}</span></td>
-      <td><span class="score-pill"><span class="score-dot" style="background:${scoreColor(o.score)};"></span><span style="color:${scoreColor(o.score)};">${o.score}</span></span></td>`;
+// ===========================
+// OVERVIEW CHARTS
+// ===========================
+let overviewChartsInit = false;
+function initOverviewCharts() {
+  if (overviewChartsInit) return;
+  overviewChartsInit = true;
+
+  // Pillar bar chart
+  const pillarCounts = {};
+  opportunities.forEach(o => o.pillars.forEach(p => { pillarCounts[p] = (pillarCounts[p]||0)+1; }));
+  new Chart(document.getElementById('pillarChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(PILLAR_LABELS).map(p => PILLAR_LABELS[p].split(' ').slice(0,2).join(' ')),
+      datasets: [{ data: Object.keys(PILLAR_LABELS).map(p => pillarCounts[p]||0),
+        backgroundColor: Object.keys(PILLAR_LABELS).map(p => PILLAR_COLORS[p]),
+        borderRadius: 4 }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, maintainAspectRatio: false }
+  });
+
+  // Funder type doughnut
+  const funderCounts = {};
+  opportunities.forEach(o => { funderCounts[o.funder_type] = (funderCounts[o.funder_type]||0)+1; });
+  const funderLabels = { bilateral: 'Bilateral (CDC, US State Dept)', multilateral: 'Multilateral (EU, World Bank)', private: 'Private Foundation / INGO', regional: 'Regional (NEPAD)' };
+  new Chart(document.getElementById('funderChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(funderCounts).map(k => funderLabels[k]),
+      datasets: [{ data: Object.values(funderCounts), backgroundColor: ['#2e86c1','#27ae60','#e67e22','#8e44ad'], borderWidth: 2 }]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } }, maintainAspectRatio: false }
+  });
+
+  // Status doughnut
+  const statusCounts = {};
+  opportunities.forEach(o => { statusCounts[o.status] = (statusCounts[o.status]||0)+1; });
+  const statusColors = { 'Open':'#27ae60', 'Closing Soon':'#e74c3c', 'Anticipated':'#2874a6', 'Closed':'#95a5a6' };
+  new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(statusCounts),
+      datasets: [{ data: Object.values(statusCounts), backgroundColor: Object.keys(statusCounts).map(s => statusColors[s]||'#bdc3c7'), borderWidth: 2 }]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } }, maintainAspectRatio: false }
+  });
+}
+
+// ===========================
+// OPPORTUNITIES TABLE
+// ===========================
+let currentData = [...opportunities];
+let sortKey = null, sortDir = 1;
+
+function getPillarPills(pillars) {
+  return pillars.map(p => `<span class="pill pill-${p.toLowerCase()}">${p}: ${PILLAR_LABELS[p]}</span>`).join('');
+}
+function getStatusPill(status) {
+  const cls = { 'Open':'status-open','Closing Soon':'status-closing','Anticipated':'status-anticipated','Closed':'status-closed' };
+  return `<span class="status-pill ${cls[status]||''}">${status}</span>`;
+}
+function getScoreColor(score) {
+  if (score >= 85) return '#27ae60';
+  if (score >= 70) return '#e67e22';
+  if (score >= 50) return '#e74c3c';
+  return '#95a5a6';
+}
+function getScoreClass(score) {
+  if (score >= 85) return 'score-excellent';
+  if (score >= 70) return 'score-good';
+  return 'score-moderate';
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('oppTableBody');
+  tbody.innerHTML = '';
+  document.getElementById('resultsCount').textContent = `Showing ${data.length} of ${opportunities.length} opportunities`;
+  data.forEach(o => {
+    const color = getScoreColor(o.score);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="max-width:280px">
+        <div class="opp-title"><a href="${o.url}" target="_blank">${o.title}</a></div>
+        <div class="opp-subtitle">${o.id} &bull; ${o.eligibility.substring(0,50)}...</div>
+      </td>
+      <td style="min-width:120px;font-size:12px">${o.funder}</td>
+      <td><span style="font-size:11px;background:#eaf0fb;border-radius:8px;padding:2px 7px;font-weight:700">${o.type}</span></td>
+      <td style="min-width:140px">${getPillarPills(o.pillars)}</td>
+      <td style="min-width:90px;font-size:12px;font-weight:600">${o.close_date}</td>
+      <td style="min-width:100px;font-size:11px;color:var(--muted)">${o.award.substring(0,35)}</td>
+      <td>${getStatusPill(o.status)}</td>
+      <td>
+        <div class="mini-score-bar">
+          <div class="mini-bar"><div class="mini-fill" style="width:${o.score}%;background:${color}"></div></div>
+          <div class="mini-score-num ${getScoreClass(o.score)}">${o.score}</div>
+        </div>
+      </td>`;
     tbody.appendChild(tr);
   });
 }
 
-function filterTable(){
-  const st=document.getElementById("filterStatus").value;
-  const pl=document.getElementById("filterPillar").value;
-  const sc=parseInt(document.getElementById("filterScore").value)||0;
-  const q=(document.getElementById("filterSearch").value||"").toLowerCase();
-  renderTable(OPP.filter(o=>{
-    if(st!=="All"&&o.status!==st) return false;
-    if(pl!=="All"&&!o.pillars.includes(pl)) return false;
-    if(o.score<sc) return false;
-    if(q&&!o.title.toLowerCase().includes(q)&&!o.funder.toLowerCase().includes(q)) return false;
+function applyFilters() {
+  const status = document.getElementById('filterStatus').value;
+  const pillar = document.getElementById('filterPillar').value;
+  const funder = document.getElementById('filterFunder').value;
+  const minScore = parseInt(document.getElementById('filterScore').value);
+  const search = document.getElementById('filterSearch').value.toLowerCase();
+
+  let filtered = opportunities.filter(o => {
+    if (status !== 'All' && o.status !== status) return false;
+    if (pillar !== 'All' && !o.pillars.includes(pillar)) return false;
+    if (funder !== 'All' && o.funder_type !== funder) return false;
+    if (o.score < minScore) return false;
+    if (search && !o.title.toLowerCase().includes(search) && !o.funder.toLowerCase().includes(search)) return false;
     return true;
-  }));
+  });
+  renderTable(filtered);
 }
 
-let radarInst=null;
-function populateScoreSelect(){
-  const sel=document.getElementById("scoreSelect");
-  OPP.forEach(o=>{
-    const opt=document.createElement("option");
-    opt.value=o.id;
-    opt.textContent=`${scoreEmoji(o.score)} [${o.score}] ${o.title}`;
-    sel.appendChild(opt);
+function updateScoreLabel() {
+  document.getElementById('scoreLabel').textContent = '≥ ' + document.getElementById('filterScore').value;
+}
+
+function sortTable(key) {
+  if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+  const sorted = [...currentData].sort((a,b) => {
+    const va = key==='score' ? a.score : (a[key]||'').toString();
+    const vb = key==='score' ? b.score : (b[key]||'').toString();
+    return typeof va === 'number' ? (va-vb)*sortDir : va.localeCompare(vb)*sortDir;
   });
+  renderTable(sorted);
+}
+
+// ===========================
+// SCORE ANALYSIS
+// ===========================
+let radarChart = null;
+function initScoreAnalysis() {
+  const sel = document.getElementById('scoreSelect');
+  if (sel.options.length === 0) {
+    opportunities.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o.id; opt.textContent = `${o.id} — ${o.title.substring(0,55)}...`;
+      sel.appendChild(opt);
+    });
+  }
   renderScoreDetail();
 }
-function renderScoreDetail(){
-  const o=OPP.find(x=>x.id===document.getElementById("scoreSelect").value);
-  if(!o)return;
-  document.getElementById("scoreDims").innerHTML=
-    DNAMES.map((n,i)=>`<div class="score-dim-row"><span style="font-size:13px;font-weight:500;">${n}</span><span><span style="font-weight:700;color:${scoreColor(o.score)};">${o.dims[i]}</span><span style="font-size:11px;color:#6b7280;"> / ${DMAX[i]}</span></span></div>`).join("")+
-    `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;"><span>TOTAL SCORE</span><span style="font-size:17px;color:${scoreColor(o.score)};">${o.score} / 100</span></div>`;
-  const rb=document.getElementById("recoBox");
-  rb.innerHTML = o.score>=85?"🟢 <strong>Excellent Fit</strong> — Assign a proposal lead now. Begin consortium scoping and confirm eligibility immediately.":
-                 o.score>=70?"🟡 <strong>Good Fit</strong> — Worth pursuing with preparation. Identify partners and review eligibility carefully.":
-                 o.score>=50?"🟠 <strong>Moderate Fit</strong> — Evaluate further. Strategic partnerships may strengthen the application.":
-                 "🔴 <strong>Weak Fit</strong> — Only pursue if strategically necessary.";
-  rb.className="reco-box"+(o.score<70?" orange":o.score<85?" yellow":"");
-  if(radarInst) radarInst.destroy();
-  radarInst=new Chart(document.getElementById("radarChart"),{
-    type:"radar",
-    data:{
-      labels:DNAMES,
-      datasets:[{label:o.title.substring(0,40),data:o.dims.map((v,i)=>Math.round((v/DMAX[i])*100)),backgroundColor:"rgba(22,163,74,.12)",borderColor:"rgba(22,163,74,.8)",borderWidth:2,pointBackgroundColor:"#16a34a"}]
+
+function renderScoreDetail() {
+  const id = document.getElementById('scoreSelect').value;
+  const o = opportunities.find(x => x.id === id);
+  if (!o) return;
+  const area = document.getElementById('scoreDetailArea');
+  const recClass = o.rec_type === 'excellent' ? 'recommendation' : o.rec_type === 'good' ? 'recommendation' : 'recommendation moderate';
+  const badgeClass = o.score >= 85 ? 'bg-excellent' : o.score >= 70 ? 'bg-good' : 'bg-moderate';
+  const emoji = o.score >= 85 ? '🟢' : o.score >= 70 ? '🟡' : '🟠';
+  const label = o.score >= 85 ? 'Excellent Fit' : o.score >= 70 ? 'Good Fit' : 'Moderate Fit';
+
+  area.innerHTML = `
+    <div class="score-radar">
+      <div style="text-align:center;margin-bottom:12px">
+        <div class="score-total-badge ${badgeClass}">${o.score}</div>
+        <div style="font-size:13px;font-weight:700">${emoji} ${label}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">${o.id}</div>
+      </div>
+      <canvas id="radarCanvas" style="max-height:260px"></canvas>
+    </div>
+    <div class="score-breakdown">
+      <h3>Score Breakdown</h3>
+      ${Object.entries(o.dims).map(([dim, d]) => `
+        <div class="dim-row">
+          <div class="dim-name">${dim}</div>
+          <div class="dim-bar"><div class="dim-fill" style="width:${(d.score/d.max)*100}%;background:${getScoreColor(o.score)}"></div></div>
+          <div class="dim-score">${d.score} / ${d.max}</div>
+        </div>`).join('')}
+      <div style="border-top:2px solid var(--primary);margin-top:10px;padding-top:10px;display:flex;justify-content:flex-end;align-items:center;gap:10px">
+        <span style="font-size:13px;font-weight:700;color:var(--muted)">TOTAL</span>
+        <span style="font-size:22px;font-weight:900;color:${getScoreColor(o.score)}">${o.score} / 100</span>
+      </div>
+      <div class="${recClass}">
+        <h4>AFENET Strategy Note</h4>
+        <p>${o.recommendation}</p>
+      </div>
+    </div>`;
+
+  if (radarChart) { radarChart.destroy(); radarChart = null; }
+  radarChart = new Chart(document.getElementById('radarCanvas'), {
+    type: 'radar',
+    data: {
+      labels: Object.keys(o.dims),
+      datasets: [{
+        label: 'Score',
+        data: Object.values(o.dims).map(d => (d.score/d.max)*100),
+        backgroundColor: 'rgba(46,134,193,0.2)',
+        borderColor: '#2e86c1',
+        pointBackgroundColor: '#2e86c1',
+        pointRadius: 4,
+        borderWidth: 2
+      }]
     },
-    options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:25,font:{size:10}},pointLabels:{font:{size:11}}}},plugins:{legend:{display:false}}}
+    options: {
+      scales: { r: { min: 0, max: 100, ticks: { stepSize: 20, font: { size: 9 } }, pointLabels: { font: { size: 10 } } } },
+      plugins: { legend: { display: false } },
+      maintainAspectRatio: false
+    }
   });
 }
 
-function initCharts(){
-  const pc={P1:0,P2:0,P3:0,P4:0,P5:0,P6:0};
-  OPP.forEach(o=>o.pillars.forEach(p=>pc[p]++));
-  new Chart(document.getElementById("pillarChart"),{type:"bar",data:{labels:Object.keys(pc).map(p=>PFULL[p]),datasets:[{label:"Opps",data:Object.values(pc),backgroundColor:Object.keys(pc).map(p=>PCOLORS[p]),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1}},y:{ticks:{font:{size:11}}}}}});
-  const ft={bilateral:0,multilateral:0,private:0,regional:0};
-  OPP.forEach(o=>ft[o.ftype]=(ft[o.ftype]||0)+1);
-  new Chart(document.getElementById("funderChart"),{type:"doughnut",data:{labels:["Bilateral (CDC/NIH)","Multilateral (WB/EU/WHO)","Private (Wellcome/GC)","Regional (NEPAD)"],datasets:[{data:Object.values(ft),backgroundColor:["#3b82f6","#10b981","#f59e0b","#8b5cf6"],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{font:{size:11},boxWidth:12}}}}});
-  const open=OPP.filter(o=>o.close&&o.status!=="Closed").sort((a,b)=>new Date(a.close)-new Date(b.close));
-  new Chart(document.getElementById("timelineChart"),{type:"bar",data:{labels:open.map(o=>o.title.substring(0,38)+"…"),datasets:[{label:"Days",data:open.map(o=>Math.max(0,daysLeft(o.close))),backgroundColor:open.map(o=>{const d=daysLeft(o.close);return d<=14?"rgba(220,38,38,.75)":d<=30?"rgba(234,179,8,.75)":"rgba(22,163,74,.75)";}),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,title:{display:true,text:"Days Remaining",font:{size:11}}},y:{ticks:{font:{size:10}}}}}});
-}
-
-function renderPillars(){
-  const grid=document.getElementById("pillarGrid");
-  ["P1","P2","P3","P4","P5","P6"].forEach(p=>{
-    const opps=OPP.filter(o=>o.pillars.includes(p));
-    const openN=opps.filter(o=>o.status==="Open"||o.status==="Closing Soon").length;
-    const div=document.createElement("div");
-    div.className="pillar-card";
-    div.style.borderTop=`4px solid ${PCOLORS[p]}`;
-    div.innerHTML=`<h4 style="color:${PCOLORS[p]};">${PLABELS[p]}</h4><div style="font-size:11px;color:#6b7280;margin-bottom:8px;">${PFULL[p]}</div><div class="pillar-num">${opps.length}</div><div class="pillar-sub">${openN} open · ${opps.filter(o=>o.status==="Verify").length} unverified</div><div style="margin-top:10px;">${opps.map(o=>`<div style="padding:4px 0;border-bottom:1px solid #e2e8f0;font-size:12px;"><a href="${o.url}" target="_blank" style="color:#2563eb;text-decoration:none;">${o.title.substring(0,55)}…</a> <span class="status ${statusCls(o.status)}" style="font-size:10px;">${statusLbl(o.status)}</span></div>`).join("")}</div>`;
-    grid.appendChild(div);
+// ===========================
+// PILLAR CHARTS
+// ===========================
+let pillarChartsInit = false;
+function initPillarCharts() {
+  if (pillarChartsInit) return;
+  pillarChartsInit = true;
+  const pillarCounts = {};
+  opportunities.forEach(o => o.pillars.forEach(p => { pillarCounts[p] = (pillarCounts[p]||0)+1; }));
+  new Chart(document.getElementById('pillarBarChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(PILLAR_LABELS).map(p => PILLAR_LABELS[p]),
+      datasets: [{
+        label: 'Opportunities',
+        data: Object.keys(PILLAR_LABELS).map(p => pillarCounts[p]||0),
+        backgroundColor: Object.keys(PILLAR_LABELS).map(p => PILLAR_COLORS[p]),
+        borderRadius: 4
+      }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }, maintainAspectRatio: false }
   });
 }
 
-window.addEventListener("DOMContentLoaded",()=>{ renderTable(OPP); initCharts(); });
-
-// ── Login Gate ────────────────────────────────────────────────────────────
-function djb2(s) {
-  let h = 5381;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) + h) ^ s.charCodeAt(i);
-  return (h >>> 0).toString(16);
-}
-const U_HASH = '5317d3d8'; // "grants"
-const P_HASH = '671a177e'; // "Grants@2026"
-
-function checkLogin() {
-  const u = document.getElementById('g-user').value.trim().toLowerCase();
-  const p = document.getElementById('g-pass').value;
-  if (djb2(u) === U_HASH && djb2(p) === P_HASH) {
-    sessionStorage.setItem('afenet_grants_auth', '1');
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('dash').style.display = 'block';
-    document.dispatchEvent(new Event('dash-visible'));
-  } else {
-    document.getElementById('gate-err').style.display = 'block';
-  }
-}
-document.addEventListener('DOMContentLoaded', () => {
-  // Allow Enter key
-  ['g-user','g-pass'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => {
-      if (e.key === 'Enter') checkLogin();
+function renderHeatmap() {
+  const container = document.getElementById('heatmapContainer');
+  const funders = ['CDC', 'Pandemic Fund', 'EU/EDCTP3', 'US State Dept', 'Wellcome/Gates', 'ScienceForAfrica', 'CARE', 'AUDA-NEPAD'];
+  const pillarKeys = ['P1','P2','P3','P4','P5','P6'];
+  const heatData = {
+    'CDC': ['P1','P2','P6'],
+    'Pandemic Fund': ['P1','P2','P4','P5'],
+    'EU/EDCTP3': ['P1','P6'],
+    'US State Dept': ['P1','P4'],
+    'Wellcome/Gates': ['P1','P6'],
+    'ScienceForAfrica': ['P5','P6'],
+    'CARE': ['P4','P6'],
+    'AUDA-NEPAD': ['P1','P2','P3','P4']
+  };
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:11px">';
+  html += '<thead><tr><th style="padding:4px;text-align:left;font-weight:700;font-size:10px;color:var(--muted)">Funder</th>';
+  pillarKeys.forEach(p => { html += `<th style="padding:4px;text-align:center;font-size:10px;color:${PILLAR_COLORS[p]}">${p}</th>`; });
+  html += '</tr></thead><tbody>';
+  funders.forEach(f => {
+    html += `<tr><td style="padding:5px 4px;font-weight:600">${f}</td>`;
+    pillarKeys.forEach(p => {
+      const has = heatData[f] && heatData[f].includes(p);
+      html += `<td style="text-align:center;padding:5px 4px"><span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:${has ? PILLAR_COLORS[p] : '#f2f3f4'};color:${has?'white':'#ccc'};font-size:11px;line-height:18px">${has?'✓':''}</span></td>`;
     });
+    html += '</tr>';
   });
-  // Restore session
-  if (sessionStorage.getItem('afenet_grants_auth') === '1') {
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('dash').style.display = 'block';
-  }
-});
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
 
+// ===========================
+// INIT
+// ===========================
+window.onload = function() {
+  setTimeout(initOverviewCharts, 100);
+  renderTable(opportunities);
+};
 </script>
-</div><!-- end #dash -->
 </body>
 </html>
