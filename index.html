@@ -110,9 +110,58 @@
   .gap-text { background: white; border-radius: 10px; padding: 18px 20px; box-shadow: var(--card-shadow); margin-top: 20px; font-size: 13px; line-height: 1.7; }
   .gap-text strong { color: var(--primary); }
   footer { text-align: center; padding: 20px; font-size: 11px; color: var(--muted); }
+
+  /* LOGIN GATE */
+  #loginGate {
+    position: fixed; inset: 0; z-index: 999;
+    background: linear-gradient(135deg, #1a5276 0%, #2e86c1 100%);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .login-card {
+    background: white; border-radius: 14px; padding: 36px 34px; width: 100%; max-width: 360px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  }
+  .login-card .login-logo { font-size: 30px; text-align: center; margin-bottom: 6px; }
+  .login-card h2 { font-size: 17px; color: var(--primary); text-align: center; margin-bottom: 4px; }
+  .login-card p.login-sub { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 22px; }
+  .login-field { margin-bottom: 14px; }
+  .login-field label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+  .login-field input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;
+  }
+  .login-field input:focus { outline: none; border-color: var(--secondary); }
+  #loginBtn {
+    width: 100%; padding: 11px; background: var(--primary); color: white; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  #loginBtn:hover { background: var(--secondary); }
+  #loginError { color: var(--danger); font-size: 12px; text-align: center; margin-top: 12px; min-height: 16px; }
+  .login-footnote { font-size: 10.5px; color: var(--muted); text-align: center; margin-top: 18px; line-height: 1.5; }
+  #logoutBtn {
+    background: rgba(255,255,255,0.18); border: none; color: white; border-radius: 8px; padding: 5px 12px;
+    font-size: 11px; font-weight: 700; cursor: pointer; margin-left: 12px;
+  }
+  #logoutBtn:hover { background: rgba(255,255,255,0.3); }
 </style>
 </head>
 <body>
+
+<div id="loginGate">
+  <div class="login-card">
+    <div class="login-logo">🌍</div>
+    <h2>AFENET Grant Intelligence Dashboard</h2>
+    <p class="login-sub">Sign in to view this week's funding pipeline</p>
+    <form id="loginForm">
+      <div class="login-field"><label>Username</label><input type="text" id="loginUser" autocomplete="username" required></div>
+      <div class="login-field"><label>Password</label><input type="password" id="loginPass" autocomplete="current-password" required></div>
+      <button type="submit" id="loginBtn">Sign In</button>
+      <div id="loginError"></div>
+    </form>
+    <div class="login-footnote">Internal AFENET tool. Contact the AI Lab / Grants Office for access.</div>
+  </div>
+</div>
+
+<div id="dashboardApp" style="display:none;">
 
 <div class="header">
   <div class="header-left">
@@ -122,9 +171,12 @@
       <p>African Field Epidemiology Network — Funding Opportunity Radar</p>
     </div>
   </div>
-  <div class="header-meta">
-    Last updated: July 20, 2026 &nbsp;|&nbsp; Week 30, 2026
-    <div class="badge-api">Grants.gov API blocked (proxy) — sourced via WebSearch + primary-page verification</div>
+  <div class="header-meta" style="display:flex; align-items:center; gap:4px;">
+    <div>
+      Last updated: July 20, 2026 &nbsp;|&nbsp; Week 30, 2026
+      <div class="badge-api">Grants.gov API blocked (proxy) — sourced via WebSearch + primary-page verification</div>
+    </div>
+    <button id="logoutBtn" onclick="doLogout()">Sign out</button>
   </div>
 </div>
 
@@ -216,7 +268,10 @@
 
 <footer>AFENET Grant Intelligence Agent · Automated weekly scan · Data current as of July 20, 2026 · Not a substitute for direct funder verification</footer>
 
+</div><!-- /#dashboardApp -->
+
 <script>
+function initDashboard(){
 const PILLAR_NAMES = {
   P1: "Surveillance & Emergency Response", P2: "Laboratory Systems", P3: "NCD Prevention & Management",
   P4: "Universal Health Coverage", P5: "One Health & Climate", P6: "Research & Innovation"
@@ -638,6 +693,75 @@ document.querySelectorAll('.tab').forEach(tab=>{
     document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
   });
 });
+} // end initDashboard()
+</script>
+
+<script>
+/* ============================================================
+   ACCESS CONTROL — client-side gate, NOT real security.
+   Anyone who views this page's source can read the credentials
+   below. This only deters casual browsing by people who don't
+   have the link/credentials — it does not stop a determined
+   visitor. Do not put anything here you wouldn't want a
+   moderately curious person to eventually see.
+
+   ADMIN: to add/remove a user, edit the CREDENTIALS array below,
+   save this file, then redeploy with:
+     python3 deploy_grants_to_github.py
+   (from the Grant_Discovery_Agent folder). Username/password are
+   plain text on purpose — this list is meant to be easy for you
+   to edit by hand without any tooling.
+   ============================================================ */
+const CREDENTIALS = [
+  { username: "padewuyi", password: "AFENET-Grants-2026!" }
+  // Add more admin-managed users here, e.g.:
+  // { username: "jdoe", password: "ChangeMe123!" },
+];
+
+const SESSION_KEY = "afenet_grants_dash_auth";
+
+function storageGet(key){
+  try { return window.localStorage.getItem(key); } catch(e){ return null; }
+}
+function storageSet(key, val){
+  try { window.localStorage.setItem(key, val); } catch(e){ /* sandboxed view — no persistence, that's fine */ }
+}
+function storageClear(key){
+  try { window.localStorage.removeItem(key); } catch(e){}
+}
+
+function showDashboard(){
+  document.getElementById('loginGate').style.display = 'none';
+  document.getElementById('dashboardApp').style.display = 'block';
+  initDashboard();
+}
+
+function doLogout(){
+  storageClear(SESSION_KEY);
+  location.reload();
+}
+
+(function initAuth(){
+  const existing = storageGet(SESSION_KEY);
+  if (existing && CREDENTIALS.some(c => c.username === existing)) {
+    showDashboard();
+    return;
+  }
+  document.getElementById('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value;
+    const match = CREDENTIALS.find(c => c.username === u && c.password === p);
+    const err = document.getElementById('loginError');
+    if (match) {
+      err.textContent = '';
+      storageSet(SESSION_KEY, u);
+      showDashboard();
+    } else {
+      err.textContent = 'Incorrect username or password.';
+    }
+  });
+})();
 </script>
 </body>
 </html>
